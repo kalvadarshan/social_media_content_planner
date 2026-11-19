@@ -16,8 +16,14 @@ db.init_db()
 
 # ------------------------------------------------------------------ sidebar
 st.sidebar.header("Settings")
-api_key = st.sidebar.text_input("Gemini API key (optional)", type="password",
-                                help="Leave empty to run in demo mode with the built-in template generator.")
+try:
+    secret_key = st.secrets.get("GEMINI_API_KEY", "")
+except Exception:
+    secret_key = ""
+
+typed_key = st.sidebar.text_input("Gemini API key (optional)", type="password",
+                                  help="Leave empty to use the saved key, or demo mode if none is set.")
+api_key = typed_key or secret_key
 model = st.sidebar.text_input("Gemini model", value="gemini-2.5-flash")
 llm = LLM(api_key=api_key or None, model=model)
 st.sidebar.info(f"Mode: **{llm.mode}**")
